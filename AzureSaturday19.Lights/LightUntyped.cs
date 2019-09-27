@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -17,19 +16,31 @@ namespace AzureSaturday19.Lights
             [EntityTrigger] IDurableEntityContext ctx,
             ILogger log)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
+            if (ctx.IsNewlyConstructed)
+            {
+                ctx.SetState(new LightState
+                {
+                    State = false,
+                    HexColor = "#efebd8"
+                });
+            }
 
-            bool currentState = ctx.GetState<bool>();
+            var currentState = ctx.GetState<LightState>();
+            var input = ctx.GetInput<LightRequest>();
 
             switch (ctx.OperationName)
             {
                 case "on":
+                    currentState.State = true;
+                    break;
                 case "off":
-                    bool input = ctx.GetInput<bool>();
-                    currentState = input;
+                    currentState.State = false;
                     break;
                 case "get":
                     ctx.Return(currentState);
+                    break;
+                case "color":
+                    currentState.HexColor = input.HexColor;
                     break;
             }
 
@@ -42,20 +53,45 @@ namespace AzureSaturday19.Lights
 
         [FunctionName("LightUntypedTrigger")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "lights/{lightId}")] HttpRequest req,
+            string lightId,
+            [DurableClient] IDurableEntityClient client,
             ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
 
-            string name = req.Query["name"];
-
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
-            name = name ?? data?.name;
+            var lightRequest = JsonConvert.DeserializeObject<LightRequest>(requestBody);
 
-            return name != null
-                ? (ActionResult)new OkObjectResult($"Hello, {name}")
-                : new BadRequestObjectResult("Please pass a name on the query string or in the request body");
+            var entityId = new EntityId(nameof(LightUntyped), lightId);
+
+            await client.SignalEntityAsync(entityId, lightRequest.LightAction.ToString().ToLower(), lightRequest);
+
+            return new AcceptedResult();
         }
+    }
+
+    public class LightState
+    {
+        public bool State { get; set; }
+        public string HexColor { get; set; }
+        public override string ToString()
+        {
+            return $"Stete:{(State == true ? "on" : "off")} - Color:{HexColor}";
+        }
+    }
+
+    public class LightRequest
+    {
+        public LightAction LightAction { get; set; }
+        public string HexColor { get; set; }
+    }
+
+    public enum LightAction
+    {
+        On = 1,
+        Off = 2,
+        Get = 3,
+        Color = 4
     }
 }
