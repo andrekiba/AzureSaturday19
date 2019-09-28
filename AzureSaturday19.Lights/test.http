@@ -1,0 +1,15 @@
+﻿  
+### Get
+GET http://localhost:7071/runtime/webhooks/durabletask/entities/Light/hue1
+
+### On
+POST http://localhost:7071/runtime/webhooks/durabletask/entities/Light/hue1?op=On
+
+### Off
+POST http://localhost:7071/runtime/webhooks/durabletask/entities/Light/hue1?op=Off
+
+### Color
+POST http://localhost:7071/runtime/webhooks/durabletask/entities/Light/hue1?op=Color
+
+### End
+POST http://localhost:7071/runtime/webhooks/durabletask/entities/Light/hue1?op=End
