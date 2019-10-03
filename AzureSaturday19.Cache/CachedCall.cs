@@ -1,5 +1,7 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
+using System.Web.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -17,25 +19,33 @@ namespace AzureSaturday19.Cache
 			[DurableClient] IDurableClient client,
             ILogger log)
         {
-			log.LogInformation("C# HTTP trigger function processed a request.");
+	        try
+	        {
+		        log.LogInformation("C# HTTP trigger function processed a request.");
 
-			var cacheId = new EntityId(nameof(ByteCache), $"cache{userId}");
-			var state = await client.ReadEntityStateAsync<byte[]>(cacheId);		
+		        var cacheId = new EntityId(nameof(ByteCache), $"cache{userId}");
+		        var state = await client.ReadEntityStateAsync<ByteCache>(cacheId);
 
-			if (state.EntityExists)
-				return new OkObjectResult(state.EntityState);
-			else
-			{
-				//simulate call to external service to retrieve data
-				await Task.Delay(TimeSpan.FromSeconds(2));
-				var data = new byte[] { 0x60, 0x60 };
-				
-				await client.SignalEntityAsync<ICache<byte[]>>(cacheId, proxy => proxy.Set(data));
+		        if (state.EntityExists)
+			        return new OkObjectResult(state.EntityState.Value);
 
-				var orchestratorInstanceId = await client.StartNewAsync(nameof(CacheOrchestrator), cacheId);
+		        //simulate call to external service to retrieve data
+		        await Task.Delay(TimeSpan.FromSeconds(2));
+		        var data = new byte[10];
+		        new Random().NextBytes(data);
 
-				return new OkObjectResult(data);
+		        await client.SignalEntityAsync<ICache<byte[]>>(cacheId, proxy => proxy.Set(data));
+
+		        var orchestratorId = await client.StartNewAsync(nameof(CacheOrchestrator), cacheId);
+		        var managementPayload = client.CreateHttpManagementPayload(orchestratorId);
+
+		        return new OkObjectResult(new { Management = managementPayload, Data = data });
 			}
+	        catch (Exception e)
+	        {
+		        log.LogError(e.Message);
+		        return new ExceptionResult(e, true);
+	        }
         }
     }
 }

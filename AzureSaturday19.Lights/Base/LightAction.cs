@@ -4,8 +4,6 @@
 	{
 		On = 1,
 		Off = 2,
-		Get = 3,
-		Color = 4,
-		End = 5
+		Color = 3
 	}
 }

@@ -8,7 +8,7 @@ namespace AzureSaturday19.Cache
 	public interface ICache<T>
 	{
 		void Set(T value);
-		T Get();
+		Task<T> Get();
 		void Clear();
 	}
 
@@ -18,11 +18,11 @@ namespace AzureSaturday19.Cache
 		protected ILogger log;
   
 		[JsonProperty]
-		public T Value { get; private set; } = default;
+		public T Value { get; private set; }
 
 		public void Set(T value) => Value = value;
 
-		public T Get() => Value;
+		public Task<T> Get() => Task.FromResult(Value);
 
 		public void Clear() => Entity.Current.DestructOnExit();
 	}

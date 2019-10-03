@@ -33,7 +33,7 @@ namespace AzureSaturday19.Cache
 			ILogger log)
 		{
 			// Function input comes from the request content.
-			string instanceId = await starter.StartNewAsync(nameof(CacheOrchestrator), null);
+			var instanceId = await starter.StartNewAsync(nameof(CacheOrchestrator), null);
 
 			log.LogInformation($"Started orchestration with ID = '{instanceId}'.");
 

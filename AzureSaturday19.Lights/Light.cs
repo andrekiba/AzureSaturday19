@@ -7,8 +7,17 @@ using Newtonsoft.Json.Converters;
 
 namespace AzureSaturday19.Lights
 {
+	public interface ILight
+	{
+		void On();
+		void Off();
+		Task<LightState> Get();
+		void Color(string hexColor);
+		void End();
+	}
+
 	[JsonObject(MemberSerialization.OptIn)]
-	public class Light
+	public class Light : ILight
 	{
 		readonly ILogger log;
 		public Light(ILogger log)
@@ -28,7 +37,8 @@ namespace AzureSaturday19.Lights
 
 		public void On() => State = LightState.On;
 		public void Off() => State = LightState.Off;
-		public string Get() => State == LightState.On ? "ON" : "OFF";
+		//public Task<string> Get() => Task.FromResult(State == LightState.On ? "ON" : "OFF");
+		public Task<LightState> Get() => Task.FromResult(State);
 		public void Color(string hexColor) => HexColor = hexColor;
 		public void End() => Entity.Current.DestructOnExit();
 
