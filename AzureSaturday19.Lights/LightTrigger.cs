@@ -7,7 +7,6 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.IO;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 
@@ -15,12 +14,6 @@ namespace AzureSaturday19.Lights
 {
 	public class LightTrigger
 	{
-		readonly HttpClient httpClient;
-		public LightTrigger(IHttpClientFactory httpClientFactory)
-		{
-			httpClient = httpClientFactory.CreateClient();
-		}
-
 		[FunctionName("LightTrigger")]
 		public async Task<IActionResult> Run(
 			[HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "lights/{lightId}")] HttpRequest req,

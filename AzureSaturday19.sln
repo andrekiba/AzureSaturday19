@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureSaturday19.Lights", "A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureSaturday19.Cache", "AzureSaturday19.Cache\AzureSaturday19.Cache.csproj", "{B9ED208A-57FB-49A7-B4BD-FB95E22A5304}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureSaturday19.KEDA", "AzureSaturday19.KEDA\AzureSaturday19.KEDA.csproj", "{67458689-2645-4F2D-A3AF-581B62DC7958}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{B9ED208A-57FB-49A7-B4BD-FB95E22A5304}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B9ED208A-57FB-49A7-B4BD-FB95E22A5304}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B9ED208A-57FB-49A7-B4BD-FB95E22A5304}.Release|Any CPU.Build.0 = Release|Any CPU
+		{67458689-2645-4F2D-A3AF-581B62DC7958}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67458689-2645-4F2D-A3AF-581B62DC7958}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67458689-2645-4F2D-A3AF-581B62DC7958}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67458689-2645-4F2D-A3AF-581B62DC7958}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
