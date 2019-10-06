@@ -22,6 +22,7 @@ namespace AzureSaturday19.KEDA
             ILogger log)
         {
             log.LogInformation($"C# Queue trigger function processed: {item}");
+            //simulate delay to process item
             await Task.Delay(TimeSpan.FromSeconds(3));
             await heartbeatService.Heartbeat(cancellationToken);
         }
