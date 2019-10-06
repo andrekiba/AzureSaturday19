@@ -4,6 +4,9 @@
 # Azure Functions localsettings file
 local.settings.json
 
+# Azure Functions deploy.yml
+deploy.yml
+
 # User-specific files
 *.suo
 *.user
@@ -221,3 +224,7 @@ _Pvt_Extensions
 
 # DS_Store
 *.DS_Store
+
+# Azurite
+__*__
+__*__.json

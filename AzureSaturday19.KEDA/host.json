@@ -1,8 +1,13 @@
 {
-	"version": "2.0",
-	"logging": {
-		"logLevel": {
-			"default": "Information"
-		}
-	}
+  "version": "2.0",
+  "logging": {
+    "logLevel": {
+      "default": "Information"
+    }
+  },
+  "extensions": {
+    "queues": {
+      "batchSize": 1
+    }
+  }
 }

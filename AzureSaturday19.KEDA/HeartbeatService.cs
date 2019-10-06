@@ -6,24 +6,24 @@ using Microsoft.Extensions.Logging;
 
 namespace AzureSaturday19.KEDA
 {
-	public class HeartbeatService : IHeartbeatService
-	{
-		readonly ILogger<HeartbeatService> logger;
-		readonly IHostIdProvider hostIdProvider;
+    public class HeartbeatService : IHeartbeatService
+    {
+        readonly ILogger<HeartbeatService> logger;
+        readonly IHostIdProvider hostIdProvider;
 
-		public HeartbeatService(ILogger<HeartbeatService> logger, IHostIdProvider hostIdProvider)
-		{
-			this.logger = logger;
-			this.hostIdProvider = hostIdProvider;
-		}
+        public HeartbeatService(ILogger<HeartbeatService> logger, IHostIdProvider hostIdProvider)
+        {
+            this.logger = logger;
+            this.hostIdProvider = hostIdProvider;
+        }
 
-		public async Task<string> Heartbeat(CancellationToken cancellationToken)
-		{
-			logger.LogInformation("Heartbeat invoked.");
+        public async Task<string> Heartbeat(CancellationToken cancellationToken)
+        {
+            logger.LogInformation("Heartbeat invoked.");
 
-			var hostId = await hostIdProvider.GetHostIdAsync(cancellationToken);
-			var when = DateTime.UtcNow.ToString("O");
-			return $"I'm alive from AKS - {hostId} at {when}!";
-		}
-	}
+            var hostId = await hostIdProvider.GetHostIdAsync(cancellationToken);
+            var when = DateTime.UtcNow.ToString("G");
+            return $"I'm alive from host {hostId} at {when}!";
+        }
+    }
 }
