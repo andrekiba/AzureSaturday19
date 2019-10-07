@@ -6,6 +6,7 @@ local.settings.json
 
 # Azure Functions deploy.yml
 deploy.yml
+deploy_bak.yml
 
 # User-specific files
 *.suo
