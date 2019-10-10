@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
-using AzureSaturday19.Lights.Base;
+using AzureSaturday19.Lights.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -25,59 +25,34 @@ namespace AzureSaturday19.Lights
                 var scenario = context.GetInput<ScenarioRequest>();
                 var lights = scenario.LightRequests.Select(lr => new EntityId(nameof(Light), lr.LightId)).ToArray();
 
-                #region Old
-
-                //var light1 = new EntityId(nameof(Light), "hue1");
-                //var light2 = new EntityId(nameof(Light), "hue2");
-
-                //using (await context.LockAsync(light1, light2))
-                //{
-                //	var light1Proxy = context.CreateEntityProxy<ILight>(light1);
-                //	var light2Proxy = context.CreateEntityProxy<ILight>(light2);
-
-                //	var ligth1State = await light1Proxy.Get();
-                //	var ligth2State = await light2Proxy.Get();
-
-                //	switch (ligth1State)
-                //	{
-                //		case LightState.On when ligth2State == LightState.Off:
-                //			light1Proxy.Off();
-                //			light2Proxy.On();
-                //			break;
-                //		case LightState.Off when ligth2State == LightState.On:
-                //			light1Proxy.On();
-                //			light2Proxy.Off();
-                //			break;
-                //		default:
-                //			light1Proxy.Off();
-                //			light2Proxy.Off();
-                //			break;
-                //	}
-                //}
-
-                #endregion
-
                 using (await context.LockAsync(lights))
                 {
                     for (var i = 0; i < lights.Length; i++)
                     {
-                        var lightProxy = context.CreateEntityProxy<ILight>(lights[i]);
+	                    var lightId = lights[i];
+	                    //var lightProxy = context.CreateEntityProxy<ILight>(lightId);
                         var lightRequest = scenario.LightRequests[i];
-                        //var prevState = await context.CallEntityAsync<LightState>(lights[i], "Get");
-                        switch (lightRequest.LightAction)
+						
+						switch (lightRequest.LightAction)
                         {
                             case LightAction.Off:
-                                await context.CallEntityAsync(lights[i], "Off");
-                                //context.SignalEntity(lights[i], "Off");
+                                await context.CallEntityAsync(lightId, "Off");
                                 //lightProxy.Off();
+								
+                                //non posso usare Signal perchè ho lock sulla entity!!
+                                //all'interno della critical section posso solo fare Call di entity in lock
+								//oppure posso fare Singnal di entity in lock
+								//context.SignalEntity(lightId, "Off");
                                 break;
                             case LightAction.On:
-                                await context.CallEntityAsync(lights[i], "On");
+                                await context.CallEntityAsync(lightId, "On");
                                 //lightProxy.On();
                                 break;
                             case LightAction.Color:
-                                await context.CallEntityAsync(lights[i], "On");
-                                await context.CallEntityAsync(lights[i], "Color", lightRequest.HexColor);
+	                            var currentState = await context.CallEntityAsync<LightState>(lightId, "Get");
+								if(currentState == LightState.Off)
+									await context.CallEntityAsync(lightId, "On");
+                                await context.CallEntityAsync(lightId, "Color", lightRequest.HexColor);
                                 //lightProxy.Color(lightRequest.HexColor);
                                 break;
                             default:

@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using AzureSaturday19.Lights.Base;
+using AzureSaturday19.Lights.Models;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 
@@ -15,7 +15,7 @@ namespace AzureSaturday19.Lights
 		{
 			try
 			{
-				if (ctx.IsNewlyConstructed)
+				if (!ctx.HasState)
 					ctx.SetState(new { State = LightState.Off, HexColor = "#eeeeee"});
 				
 				var currentState = ctx.GetState<dynamic>();
@@ -36,8 +36,10 @@ namespace AzureSaturday19.Lights
 						ctx.Return(currentState);
 						break;
 					case "End":
-						ctx.DestructOnExit();
+						ctx.DeleteState();
 						break;
+					default:
+						throw new ArgumentOutOfRangeException();
 				}
 			}
 			catch (Exception e)

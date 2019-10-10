@@ -1,5 +1,4 @@
 ﻿using System;
-using AzureSaturday19.Lights.Base;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -9,7 +8,7 @@ using Newtonsoft.Json;
 using System.IO;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Newtonsoft.Json.Linq;
+using AzureSaturday19.Lights.Models;
 
 namespace AzureSaturday19.Lights
 {
@@ -17,8 +16,8 @@ namespace AzureSaturday19.Lights
     {
         [FunctionName("LightTrigger")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "lights/{lightId}")] HttpRequest req,
-            string lightId,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "lights/{lightKey}")] HttpRequest req,
+            string lightKey,
             [DurableClient] IDurableEntityClient client,
             ILogger log)
         {
@@ -29,10 +28,19 @@ namespace AzureSaturday19.Lights
                 var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
                 var lightRequest = JsonConvert.DeserializeObject<LightRequest>(requestBody);
 
-                var entityId = new EntityId(nameof(Light), lightId);
+                var entityId = new EntityId(nameof(Light), lightKey);
 
-                //var lightStatus = await client.ReadEntityStateAsync<JObject>(entityId);
-
+				//EntityStateResponse
+                var esr = await client.ReadEntityStateAsync<Light>(entityId);
+                if (esr.EntityExists)
+                {
+					//sto modificando lo snapshot non la entity!!
+					//https://github.com/Azure/azure-functions-durable-extension/issues/960
+					esr.EntityState.On();
+	                var test = await esr.EntityState.Get();
+				}
+                
+				//se voglio modificare la entity devo usare Signal
                 await client.SignalEntityAsync(entityId, lightRequest.LightAction.ToString(),
                     lightRequest.LightAction == LightAction.Color ? lightRequest.HexColor : null);
 

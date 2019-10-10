@@ -1,4 +1,4 @@
-﻿namespace AzureSaturday19.Lights.Base
+﻿namespace AzureSaturday19.Lights.Models
 {
 	public enum LightAction
 	{

@@ -17,7 +17,7 @@ namespace AzureSaturday19.Cache
 			logger.LogInformation("Starting cache manager");
 			
 			var cacheId = context.GetInput<EntityId>();
-			await context.CreateTimer(context.CurrentUtcDateTime.AddMinutes(5), CancellationToken.None);
+			await context.CreateTimer(context.CurrentUtcDateTime.AddMinutes(1), CancellationToken.None);
 
 			logger.LogInformation($"Cleaning {cacheId.EntityKey}");
 

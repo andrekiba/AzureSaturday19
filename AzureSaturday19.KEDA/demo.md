@@ -33,7 +33,7 @@ minikube start
 func kubernetes install --namespace keda
 
 # generate deploy file
-# then replace LoadBalancer with NodePort
+# then replace LoadBalancer with NodePort (only if Minikube)
 func kubernetes deploy --name kedademo --image-name andrekiba/kedafunc:v2 --dry-run > deploy.yml
 
 # applay the deployment

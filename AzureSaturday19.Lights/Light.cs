@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using AzureSaturday19.Lights.Base;
+using AzureSaturday19.Lights.Models;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -40,7 +40,7 @@ namespace AzureSaturday19.Lights
         //public Task<string> Get() => Task.FromResult(State == LightState.On ? "ON" : "OFF");
         public Task<LightState> Get() => Task.FromResult(State);
         public void Color(string hexColor) => HexColor = hexColor;
-        public void End() => Entity.Current.DestructOnExit();
+        public void End() => Entity.Current.DeleteState();
 
         [FunctionName(nameof(Light))]
         public static Task Run(

@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -21,8 +20,6 @@ namespace AzureSaturday19.Cache
         {
 	        try
 	        {
-		        log.LogInformation("C# HTTP trigger function processed a request.");
-
 		        var cacheId = new EntityId(nameof(ByteCache), $"cache{userId}");
 		        var state = await client.ReadEntityStateAsync<ByteCache>(cacheId);
 

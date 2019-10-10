@@ -15,8 +15,6 @@ namespace AzureSaturday19.Cache
 	[JsonObject(MemberSerialization.OptIn)]
 	public abstract class Cache<T> : ICache<T>
 	{
-		protected ILogger log;
-  
 		[JsonProperty]
 		public T Value { get; private set; }
 
@@ -24,11 +22,13 @@ namespace AzureSaturday19.Cache
 
 		public Task<T> Get() => Task.FromResult(Value);
 
-		public void Clear() => Entity.Current.DestructOnExit();
+		public void Clear() => Entity.Current.DeleteState();
 	}
 
 	public class ByteCache : Cache<byte[]>
 	{
+		readonly ILogger log;
+
 		public ByteCache(ILogger log)
 		{
 			this.log = log;
