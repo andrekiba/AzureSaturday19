@@ -9,37 +9,40 @@ using Newtonsoft.Json;
 using System.IO;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Newtonsoft.Json.Linq;
 
 namespace AzureSaturday19.Lights
 {
-	public class LightTrigger
-	{
-		[FunctionName("LightTrigger")]
-		public async Task<IActionResult> Run(
-			[HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "lights/{lightId}")] HttpRequest req,
-			string lightId,
-			[DurableClient] IDurableEntityClient client,
-			ILogger log)
-		{
-			try
-			{
-				log.LogInformation("C# HTTP trigger function processed a request.");
+    public class LightTrigger
+    {
+        [FunctionName("LightTrigger")]
+        public async Task<IActionResult> Run(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "lights/{lightId}")] HttpRequest req,
+            string lightId,
+            [DurableClient] IDurableEntityClient client,
+            ILogger log)
+        {
+            try
+            {
+                log.LogInformation("C# HTTP trigger function processed a request.");
 
-				var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-				var lightRequest = JsonConvert.DeserializeObject<LightRequest>(requestBody);
+                var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+                var lightRequest = JsonConvert.DeserializeObject<LightRequest>(requestBody);
 
-				var entityId = new EntityId(nameof(Light), lightId);
+                var entityId = new EntityId(nameof(Light), lightId);
 
-				await client.SignalEntityAsync(entityId, lightRequest.LightAction.ToString(),
-					lightRequest.LightAction == LightAction.Color ? lightRequest.HexColor : null);
+                //var lightStatus = await client.ReadEntityStateAsync<JObject>(entityId);
 
-				return new AcceptedResult();
-			}
-			catch (Exception e)
-			{
-				log.LogError(e.Message);
-				return new ExceptionResult(e, true);
-			}
-		}
-	}
+                await client.SignalEntityAsync(entityId, lightRequest.LightAction.ToString(),
+                    lightRequest.LightAction == LightAction.Color ? lightRequest.HexColor : null);
+
+                return new AcceptedResult();
+            }
+            catch (Exception e)
+            {
+                log.LogError(e.Message);
+                return new ExceptionResult(e, true);
+            }
+        }
+    }
 }
