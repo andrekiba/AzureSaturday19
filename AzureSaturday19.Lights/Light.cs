@@ -35,12 +35,15 @@ namespace AzureSaturday19.Lights
 
         #endregion
 
+        #region Methods
+
         public void On() => State = LightState.On;
         public void Off() => State = LightState.Off;
-        //public Task<string> Get() => Task.FromResult(State == LightState.On ? "ON" : "OFF");
         public Task<LightState> Get() => Task.FromResult(State);
         public void Color(string hexColor) => HexColor = hexColor;
         public void End() => Entity.Current.DeleteState();
+
+        #endregion
 
         [FunctionName(nameof(Light))]
         public static Task Run(

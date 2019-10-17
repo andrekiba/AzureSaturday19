@@ -30,19 +30,19 @@ namespace AzureSaturday19.Lights
 
                 var entityId = new EntityId(nameof(Light), lightKey);
 
-				//EntityStateResponse
+                //if you want to modify the entity you have to use Signal
+                await client.SignalEntityAsync(entityId, lightRequest.LightAction.ToString(),
+                    lightRequest.LightAction == LightAction.Color ? lightRequest.HexColor : null);
+
+                //EntityStateResponse
                 var esr = await client.ReadEntityStateAsync<Light>(entityId);
                 if (esr.EntityExists)
                 {
-					//sto modificando lo snapshot non la entity!!
-					//https://github.com/Azure/azure-functions-durable-extension/issues/960
-					esr.EntityState.On();
-	                var test = await esr.EntityState.Get();
-				}
-                
-				//se voglio modificare la entity devo usare Signal
-                await client.SignalEntityAsync(entityId, lightRequest.LightAction.ToString(),
-                    lightRequest.LightAction == LightAction.Color ? lightRequest.HexColor : null);
+                    //I'm changing the snapshot not the entity!!
+                    //https://github.com/Azure/azure-functions-durable-extension/issues/960
+                    var light = esr.EntityState;
+                    light.Off();
+                }
 
                 return new AcceptedResult();
             }

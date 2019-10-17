@@ -35,8 +35,8 @@
       "type": "func",
       "dependsOn": "build",
       "options": {
-        //"cwd": "${workspaceFolder}/AzureSaturday19.KEDA/bin/Debug/netcoreapp2.1"
-        "cwd": "${workspaceFolder}/AzureSaturday19.Lights/bin/Debug/netcoreapp2.1"
+        "cwd": "${workspaceFolder}/AzureSaturday19.Cache/bin/Debug/netcoreapp2.1"
+        //"cwd": "${workspaceFolder}/AzureSaturday19.Lights/bin/Debug/netcoreapp2.1"
       },
       "command": "host start",
       "isBackground": true,
